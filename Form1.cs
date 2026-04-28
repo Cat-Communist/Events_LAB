@@ -12,6 +12,18 @@ namespace MiniGame
             InitializeComponent();
 
             player = new Player(pbMain.Width / 2, pbMain.Height / 2, 0);
+
+            player.OnOverlap += (p, obj) =>
+            {
+                txtLog.Text = $"[{DateTime.Now:HH:mm:ss:ff}] Игрок пересёкся с {obj}\n" + txtLog.Text;
+            };
+
+            player.onMarkerOverlap += (m) =>
+            {
+                myObjects.Remove(m);
+                marker = null;
+            };
+
             marker = new Marker(pbMain.Width / 2 + 50, pbMain.Height / 2 + 50, 0);
 
             myObjects.Add(marker);
@@ -25,25 +37,25 @@ namespace MiniGame
             var g = e.Graphics;
             g.Clear(Color.White);
 
+            updatePlayer();
+
             foreach (var obj in myObjects.ToList())
-            {
+            { 
                 if (obj != player && player.Overlaps(obj, g))
                 {
-                    txtLog.Text = $"[{DateTime.Now:HH::mm::ss::ff}] Игрок пересёкся с {obj}" + txtLog.Text;
-
-                    if (obj == marker)
-                    {
-                        myObjects.Remove(marker);
-                        marker = null;
-                    }
+                    player.Overlap(obj);
+                    obj.Overlap(player);
                 }
+            }
 
+            foreach (var obj in myObjects.ToList())
+            { 
                 g.Transform = obj.GetTransform();
                 obj.Render(g);
             }
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void updatePlayer()
         {
             if (marker != null)
             {
@@ -54,10 +66,21 @@ namespace MiniGame
                 dx /= length;
                 dy /= length;
 
-                player.x += dx * 2;
-                player.y += dy * 2;
+                player.vx += dx * 0.5f;
+                player.vy += dy * 0.5f;
+
+                player.angle = 90 - MathF.Atan2(player.vx, player.vy) * 180 / MathF.PI;
             }
 
+            player.vx -= player.vx * 0.1f;
+            player.vy -= player.vy * 0.1f;
+
+            player.x += player.vx;
+            player.y += player.vy;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
             pbMain.Invalidate();
         }
 
