@@ -9,7 +9,8 @@ namespace MiniGame.Objects
 {
     internal class Player : BaseObject
     {
-        public Action<Marker> onMarkerOverlap;
+        public Action<Marker> OnMarkerOverlap;
+        public Action<Mob> OnMobOverlap;
         public float vx, vy;
 
         public Player(float x, float y, float angle) : base(x, y, angle)
@@ -47,7 +48,9 @@ namespace MiniGame.Objects
             base.Overlap(obj);
 
             if (obj is Marker)
-                onMarkerOverlap((Marker)obj);
+                OnMarkerOverlap((Marker)obj);
+            else if (obj is Mob)
+                OnMobOverlap((Mob)obj);
         }
     }
 }

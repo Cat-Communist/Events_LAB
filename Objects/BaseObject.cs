@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Security.Cryptography.Xml;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
@@ -16,7 +17,7 @@ namespace MiniGame.Objects
         public float angle;
 
         public Action<BaseObject, BaseObject> OnOverlap;
-
+        public BaseObject() { }
         public BaseObject(float x, float y, float angle)
         {
             this.x = x;
@@ -61,5 +62,7 @@ namespace MiniGame.Objects
                 this.OnOverlap(this, obj);
             }
         }
+
+        public virtual void Update() {}
     }
 }
